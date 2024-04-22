@@ -2,6 +2,7 @@ package painter
 
 import (
 	"image"
+	"sync"
 
 	"golang.org/x/exp/shiny/screen"
 )
@@ -24,37 +25,90 @@ type Loop struct {
 	stopReq bool
 }
 
-var size = image.Pt(400, 400)
+var size = image.Pt(800, 800)
 
 // Start запускає цикл подій. Цей метод потрібно запустити до того, як викликати на ньому будь-які інші методи.
 func (l *Loop) Start(s screen.Screen) {
 	l.next, _ = s.NewTexture(size)
 	l.prev, _ = s.NewTexture(size)
 
-	// TODO: стартувати цикл подій.
+	l.stop = make(chan struct{})
+
+	go func() {
+		for !(l.stopReq && l.mq.empty()) {
+			op := l.mq.pull()
+
+			// Значення true повертається лише тоді, коли
+			// Операція хоче перемалювати вікно після свого виконання
+			update := op.Do(l.next)
+			if update {
+				l.Receiver.Update(l.next)
+				l.next, l.prev = l.prev, l.next
+			}
+		}
+		close(l.stop)
+	}()
 }
 
 // Post додає нову операцію у внутрішню чергу.
 func (l *Loop) Post(op Operation) {
-	if update := op.Do(l.next); update {
-		l.Receiver.Update(l.next)
-		l.next, l.prev = l.prev, l.next
-	}
+	l.mq.push(op)
 }
 
 // StopAndWait сигналізує про необхідність завершити цикл та блокується до моменту його повної зупинки.
 func (l *Loop) StopAndWait() {
+	l.Post(OperationFunc(func(texture screen.Texture) {
+		l.stopReq = true
+	}))
+	// Виконання заблокується поки хтось не напише щось в канал
+	// Або він не закриється
+	<-l.stop
 }
 
-// TODO: Реалізувати чергу подій.
-type messageQueue struct{}
+// Черга подій.
+type messageQueue struct {
+	messages []Operation
+	mu       sync.Mutex
 
-func (mq *messageQueue) push(op Operation) {}
+	blocked chan struct{}
+}
+
+func (mq *messageQueue) push(op Operation) {
+	// Гарантія неодночасного редагування черги
+	mq.mu.Lock()
+	defer mq.mu.Unlock()
+
+	mq.messages = append(mq.messages, op)
+
+	if mq.blocked != nil {
+		close(mq.blocked)
+		mq.blocked = nil
+	}
+}
 
 func (mq *messageQueue) pull() Operation {
-	return nil
+	// Гарантія неодночасного редагування черги
+	mq.mu.Lock()
+	defer mq.mu.Unlock()
+
+	if len(mq.messages) == 0 {
+		mq.blocked = make(chan struct{})
+		mq.mu.Unlock()
+		<-mq.blocked
+		mq.blocked = nil
+		mq.mu.Lock()
+	}
+
+	res := mq.messages[0]
+	mq.messages = mq.messages[1:]
+
+	return res
 }
 
 func (mq *messageQueue) empty() bool {
-	return false
+	// Гарантія неодночасного редагування черги
+	mq.mu.Lock()
+	defer mq.mu.Unlock()
+
+	return len(mq.messages) == 0
 }
