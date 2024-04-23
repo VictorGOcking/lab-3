@@ -70,10 +70,12 @@ func parseCommand(cl string) painter.Operation {
 	case white:
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.WhiteFill(t)
+			painter.CreateTexture(t)
 		})
 	case green:
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.GreenFill(t)
+			painter.CreateTexture(t)
 		})
 	case update:
 		return painter.UpdateOp
@@ -83,6 +85,7 @@ func parseCommand(cl string) painter.Operation {
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.DrawBgRect(t, coords)
+			painter.CreateTexture(t)
 		})
 	case figure:
 		if len(parts) != 3 {
@@ -90,6 +93,7 @@ func parseCommand(cl string) painter.Operation {
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.DrawFigure(t, coords)
+			painter.CreateTexture(t)
 		})
 	case move:
 		if len(parts) != 3 {
@@ -97,10 +101,12 @@ func parseCommand(cl string) painter.Operation {
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.Move(t, coords)
+			painter.CreateTexture(t)
 		})
 	case reset:
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.Reset(t)
+			painter.CreateTexture(t)
 		})
 	default:
 		return nil

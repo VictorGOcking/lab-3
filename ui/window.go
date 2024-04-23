@@ -144,7 +144,7 @@ func (pw *Visualizer) handleEvent(e any, t screen.Texture) {
 }
 
 func (pw *Visualizer) drawDefaultUI() {
-	pw.w.Fill(pw.sz.Bounds(), color.RGBA{R: 0, G: 255, B: 0, A: 0}, draw.Src) // Фон.
+	pw.w.Fill(pw.sz.Bounds(), color.RGBA{G: 0xff}, draw.Src) // Фон.
 
 	figureBody1 := image.Rectangle{
 		Min: image.Point{
@@ -156,7 +156,7 @@ func (pw *Visualizer) drawDefaultUI() {
 			Y: pw.pos.Y,
 		},
 	}
-	figureColor1 := color.RGBA{R: 255, G: 255, B: 0, A: 0}
+	figureColor1 := color.RGBA{R: 0xff, G: 0xff}
 	pw.w.Fill(figureBody1, figureColor1, draw.Src)
 
 	figureBody2 := image.Rectangle{
@@ -169,7 +169,7 @@ func (pw *Visualizer) drawDefaultUI() {
 			Y: pw.pos.Y + 200,
 		},
 	}
-	figureColor2 := color.RGBA{R: 255, G: 255, B: 0, A: 0}
+	figureColor2 := color.RGBA{R: 0xff, G: 0xff}
 	pw.w.Fill(figureBody2, figureColor2, draw.Src)
 
 	// Малювання білої рамки.
