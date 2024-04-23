@@ -2,6 +2,7 @@ package lang
 
 import (
 	"bufio"
+	"fmt"
 	"golang.org/x/exp/shiny/screen"
 	"io"
 	"strconv"
@@ -44,26 +45,34 @@ func (p *Parser) Parse(in io.Reader) ([]painter.Operation, error) {
 	for scanner.Scan() {
 		commandLine := scanner.Text()
 
-		op := parseCommand(commandLine)
-		res = append(res, op)
+		op, err := parseCommand(commandLine)
+		if err != nil {
+			return nil, err
+		}
+
+		if op != nil {
+			res = append(res, op)
+		}
 	}
 	return res, nil
 }
 
-func parseCommand(cl string) painter.Operation {
+func parseCommand(cl string) (painter.Operation, error) {
 	parts := strings.Fields(cl)
+	incorrectParamsNum := fmt.Errorf("incorrect number of parameters for provided operation")
+
 	if len(parts) < 1 {
-		return nil
+		return nil, nil
 	}
 
 	cmdType, ok := commandStrings[parts[0]]
 	if !ok {
-		return nil
+		return nil, fmt.Errorf("no such operation")
 	}
 
 	coords, err := parseCoords(parts[1:])
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	switch cmdType {
@@ -71,45 +80,45 @@ func parseCommand(cl string) painter.Operation {
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.WhiteFill(t)
 			painter.CreateTexture(t)
-		})
+		}), nil
 	case green:
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.GreenFill(t)
 			painter.CreateTexture(t)
-		})
+		}), nil
 	case update:
-		return painter.UpdateOp
+		return painter.UpdateOp, nil
 	case bgrect:
 		if len(parts) != 5 {
-			return nil
+			return nil, incorrectParamsNum
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.DrawBgRect(t, coords)
 			painter.CreateTexture(t)
-		})
+		}), nil
 	case figure:
 		if len(parts) != 3 {
-			return nil
+			return nil, incorrectParamsNum
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.DrawFigure(t, coords)
 			painter.CreateTexture(t)
-		})
+		}), nil
 	case move:
 		if len(parts) != 3 {
-			return nil
+			return nil, incorrectParamsNum
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.Move(t, coords)
 			painter.CreateTexture(t)
-		})
+		}), nil
 	case reset:
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.Reset(t)
 			painter.CreateTexture(t)
-		})
+		}), nil
 	default:
-		return nil
+		return nil, nil
 	}
 }
 
