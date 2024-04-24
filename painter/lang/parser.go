@@ -33,6 +33,8 @@ var commandStrings = map[string]commandType{
 	"reset":  reset,
 }
 
+var incorrectParamsNum = fmt.Errorf("incorrect number of parameters for provided operation")
+
 type Parser struct {
 }
 
@@ -59,7 +61,6 @@ func (p *Parser) Parse(in io.Reader) ([]painter.Operation, error) {
 
 func parseCommand(cl string) (painter.Operation, error) {
 	parts := strings.Fields(cl)
-	incorrectParamsNum := fmt.Errorf("incorrect number of parameters for provided operation")
 
 	if len(parts) < 1 {
 		return nil, nil
