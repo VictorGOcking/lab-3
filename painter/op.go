@@ -1,9 +1,9 @@
 package painter
 
 import (
-	"image/color"
-	"image"
 	"golang.org/x/exp/shiny/screen"
+	"image"
+	"image/color"
 )
 
 // Operation змінює вхідну текстуру.
@@ -38,12 +38,14 @@ func (f OperationFunc) Do(t screen.Texture) bool {
 }
 
 type textureData struct {
-	Bgc           color.Color
-	BRec          []float64
-	Figures       [][]float64
+	Bgc     color.Color
+	BRec    []float64
+	Figures [][]float64
 }
 
-var tData = textureData{}
+var tData = textureData{
+	Bgc: color.Black,
+}
 
 // WhiteFill зафарбовує текстуру у білий колір. Може бути використана як Operation через OperationFunc(WhiteFill).
 func WhiteFill(t screen.Texture) {
@@ -83,13 +85,13 @@ func Reset(t screen.Texture) {
 	tData.Bgc = color.Black
 	tData.BRec = tData.BRec[:0]
 	tData.Figures = tData.Figures[:0]
-	
+
 	// Важливо: якщо знадобляться й інші аргументи, то у файлі parser.go треба змінити виклик
 }
 
 func CreateTexture(t screen.Texture) {
 	t.Fill(t.Bounds(), tData.Bgc, screen.Src)
-	
+
 	if len(tData.BRec) > 0 {
 		rectBody := image.Rectangle{
 			Min: image.Point{
@@ -103,29 +105,29 @@ func CreateTexture(t screen.Texture) {
 		}
 		t.Fill(rectBody, color.Black, screen.Src)
 	}
-	
+
 	for _, figure := range tData.Figures {
 		figureBody1 := image.Rectangle{
 			Min: image.Point{
-				X: int(figure[0] * float64(t.Size().X)) - 200,
-				Y: int(figure[1] * float64(t.Size().Y)) - 200,
+				X: int(figure[0]*float64(t.Size().X)) - 200,
+				Y: int(figure[1]*float64(t.Size().Y)) - 200,
 			},
 			Max: image.Point{
-				X: int(figure[0] * float64(t.Size().X)) + 200,
+				X: int(figure[0]*float64(t.Size().X)) + 200,
 				Y: int(figure[1] * float64(t.Size().Y)),
 			},
 		}
 		figureColor1 := color.RGBA{R: 0xff, G: 0xff}
 		t.Fill(figureBody1, figureColor1, screen.Src)
-	
+
 		figureBody2 := image.Rectangle{
 			Min: image.Point{
-				X: int(figure[0] * float64(t.Size().X)) - 67,
+				X: int(figure[0]*float64(t.Size().X)) - 67,
 				Y: int(figure[1] * float64(t.Size().Y)),
 			},
 			Max: image.Point{
-				X: int(figure[0] * float64(t.Size().X)) + 67,
-				Y: int(figure[1] * float64(t.Size().Y)) + 200,
+				X: int(figure[0]*float64(t.Size().X)) + 67,
+				Y: int(figure[1]*float64(t.Size().Y)) + 200,
 			},
 		}
 		figureColor2 := color.RGBA{R: 0xff, G: 0xff}
