@@ -70,43 +70,41 @@ type messageQueue struct {
 	messages []Operation
 	mu       sync.Mutex
 
-	blocked chan struct{}
+	signal chan struct{}
 }
 
 func (mq *messageQueue) push(op Operation) {
-	// Гарантія неодночасного редагування черги
 	mq.mu.Lock()
 	defer mq.mu.Unlock()
 
 	mq.messages = append(mq.messages, op)
 
-	if mq.blocked != nil {
-		close(mq.blocked)
-		mq.blocked = nil
+	if mq.signal != nil {
+		close(mq.signal)
+		mq.signal = nil
 	}
 }
 
 func (mq *messageQueue) pull() Operation {
-	// Гарантія неодночасного редагування черги
 	mq.mu.Lock()
 	defer mq.mu.Unlock()
 
-	if len(mq.messages) == 0 {
-		mq.blocked = make(chan struct{})
+	for len(mq.messages) == 0 {
+		mq.signal = make(chan struct{})
 		mq.mu.Unlock()
-		<-mq.blocked
-		mq.blocked = nil
+		<-mq.signal
+		//mq.signal = nil
 		mq.mu.Lock()
 	}
 
 	res := mq.messages[0]
+	mq.messages[0] = nil
 	mq.messages = mq.messages[1:]
 
 	return res
 }
 
 func (mq *messageQueue) empty() bool {
-	// Гарантія неодночасного редагування черги
 	mq.mu.Lock()
 	defer mq.mu.Unlock()
 

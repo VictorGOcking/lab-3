@@ -31,11 +31,11 @@ func TestLoop_Post(t *testing.T) {
 	l.Post(OperationFunc(func(screen.Texture) {
 		testOps = append(testOps, "op 1")
 		l.Post(OperationFunc(func(screen.Texture) {
-			testOps = append(testOps, "op 2")
+			testOps = append(testOps, "op 3")
 		}))
 	}))
 	l.Post(OperationFunc(func(screen.Texture) {
-		testOps = append(testOps, "op 3")
+		testOps = append(testOps, "op 2")
 	}))
 
 	l.StopAndWait()
@@ -54,7 +54,7 @@ func TestLoop_Post(t *testing.T) {
 		t.Error("Unexpected size of colors:", mt.Colors)
 	}
 
-	if !reflect.DeepEqual(testOps, []string{"op 1", "op 3", "op 2"}) {
+	if !reflect.DeepEqual(testOps, []string{"op 1", "op 2", "op 3"}) {
 		t.Error("Bad order:", testOps)
 	}
 }
