@@ -16,8 +16,8 @@ type Receiver interface {
 type Loop struct {
 	Receiver Receiver
 
-	next screen.Texture // текстура, яка зараз формується
-	prev screen.Texture // текстура, яка була відправлення останнього разу у Receiver
+	next screen.Texture // Текстура, яка зараз формується
+	prev screen.Texture // Текстура, яка була відправлення останнього разу у Receiver
 
 	mq messageQueue
 

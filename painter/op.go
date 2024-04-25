@@ -85,11 +85,10 @@ func Reset(t screen.Texture) {
 	tData.Bgc = color.Black
 	tData.BRec = tData.BRec[:0]
 	tData.Figures = tData.Figures[:0]
-
-	// Важливо: якщо знадобляться й інші аргументи, то у файлі parser.go треба змінити виклик
 }
 
 func CreateTexture(t screen.Texture) {
+	// Малювання визначеного запитом фону. Дефолтий фон - чорний
 	t.Fill(t.Bounds(), tData.Bgc, screen.Src)
 
 	if len(tData.BRec) > 0 {
