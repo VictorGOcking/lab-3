@@ -27,13 +27,16 @@ var UpdateOp = updateOp{}
 
 type updateOp struct{}
 
-func (op updateOp) Do(t screen.Texture) bool { return true }
+func (op updateOp) Do(t screen.Texture) bool {
+	return true
+}
 
 // OperationFunc використовується для перетворення функції оновлення текстури в Operation.
 type OperationFunc func(t screen.Texture)
 
 func (f OperationFunc) Do(t screen.Texture) bool {
 	f(t)
+	CreateTexture(t)
 	return false
 }
 

@@ -80,12 +80,10 @@ func parseCommand(cl string) (painter.Operation, error) {
 	case white:
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.WhiteFill(t)
-			painter.CreateTexture(t)
 		}), nil
 	case green:
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.GreenFill(t)
-			painter.CreateTexture(t)
 		}), nil
 	case update:
 		return painter.UpdateOp, nil
@@ -95,7 +93,6 @@ func parseCommand(cl string) (painter.Operation, error) {
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.DrawBgRect(t, coords)
-			painter.CreateTexture(t)
 		}), nil
 	case figure:
 		if len(parts) != 3 {
@@ -103,7 +100,6 @@ func parseCommand(cl string) (painter.Operation, error) {
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.DrawFigure(t, coords)
-			painter.CreateTexture(t)
 		}), nil
 	case move:
 		if len(parts) != 3 {
@@ -111,12 +107,10 @@ func parseCommand(cl string) (painter.Operation, error) {
 		}
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.Move(t, coords)
-			painter.CreateTexture(t)
 		}), nil
 	case reset:
 		return painter.OperationFunc(func(t screen.Texture) {
 			painter.Reset(t)
-			painter.CreateTexture(t)
 		}), nil
 	default:
 		return nil, nil
