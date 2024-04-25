@@ -27,7 +27,7 @@ jobs:
       run: go mod download
       
     - name: Build Painter
-      run: go build -v /cmd/painter/main.go
+      run: go build -v cmd/painter/main.go
 
     - name: Run Tests
       run: go test -v ./...
