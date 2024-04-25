@@ -2,11 +2,110 @@ package lang
 
 import (
 	"fmt"
+	"io"
+	"strings"
 	"testing"
 )
 
+func executeValidParser(parser Parser, command string) error {
+	var reader io.Reader = strings.NewReader(command)
+	_, err := parser.Parse(reader)
+	return err
+}
+
 func TestParse(t *testing.T) {
-	// idgaf how to do this
+	parser := Parser{}
+	var command string
+
+	// Parse valid "white" command
+	{
+		command = "white"
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with valid \"%v\" command: %v", command, err)
+		}
+	}
+
+	// Parse valid "green" command
+	{
+		command = "green"
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with valid \"%v\" command: %v", command, err)
+		}
+	}
+
+	// Parse valid "update" command
+	{
+		command = "update"
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with valid \"%v\" command: %v", command, err)
+		}
+	}
+
+	// Parse valid "bgrect" command
+	{
+		command = "bgrect 1 1 20 20"
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with valid \"%v\" command: %v", command, err)
+		}
+	}
+
+	// Parse invalid "bgrect" command
+	{
+		command = "bgrect 0 0"
+		err := executeValidParser(parser, command)
+		if err == nil {
+			t.Errorf("Error wasn't thrown with invalid \"%v\" command", command)
+		}
+	}
+
+	// Parse valid "figure" command
+	{
+		command = "figure 1 1"
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with valid \"%v\" command: %v", command, err)
+		}
+	}
+
+	// Parse valid "move" command
+	{
+		command = "move 10 10"
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with valid \"%v\" command: %v", command, err)
+		}
+	}
+
+	// Parse valid "reset" command
+	{
+		command = "reset"
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with valid \"%v\" command: %v", command, err)
+		}
+	}
+
+	// Parse multistrings command
+	{
+		command = "bgrect 1 1 20 20\nupdate\nwhite\ngreen\nupdate"
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with valid \"%v\" command: %v", command, err)
+		}
+	}
+
+	// Parse empty command
+	{
+		command = ""
+		err := executeValidParser(parser, command)
+		if err != nil {
+			t.Errorf("Error with empty command: %v", err)
+		}
+	}
 }
 
 func TestParseCommand(t *testing.T) {
