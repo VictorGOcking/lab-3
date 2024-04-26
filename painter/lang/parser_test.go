@@ -46,7 +46,7 @@ func TestParse(t *testing.T) {
 
 	// Parse valid "bgrect" command
 	{
-		command = "bgrect 1 1 20 20"
+		command = "bgrect 0.1 0.1 0.2 0.2"
 		err := executeValidParser(parser, command)
 		if err != nil {
 			t.Errorf("Error with valid \"%v\" command: %v", command, err)
@@ -55,7 +55,7 @@ func TestParse(t *testing.T) {
 
 	// Parse invalid "bgrect" command
 	{
-		command = "bgrect 0 0"
+		command = "bgrect 0 -10"
 		err := executeValidParser(parser, command)
 		if err == nil {
 			t.Errorf("Error wasn't thrown with invalid \"%v\" command", command)
@@ -64,7 +64,7 @@ func TestParse(t *testing.T) {
 
 	// Parse valid "figure" command
 	{
-		command = "figure 1 1"
+		command = "figure 0.2 0.2"
 		err := executeValidParser(parser, command)
 		if err != nil {
 			t.Errorf("Error with valid \"%v\" command: %v", command, err)
@@ -73,7 +73,7 @@ func TestParse(t *testing.T) {
 
 	// Parse valid "move" command
 	{
-		command = "move 10 10"
+		command = "move 0.3 0.3"
 		err := executeValidParser(parser, command)
 		if err != nil {
 			t.Errorf("Error with valid \"%v\" command: %v", command, err)
@@ -91,7 +91,7 @@ func TestParse(t *testing.T) {
 
 	// Parse multistrings command
 	{
-		command = "bgrect 1 1 20 20\nupdate\nwhite\ngreen\nupdate"
+		command = "bgrect 0.1 0.1 0.2 0.2\nupdate\nwhite\ngreen\nupdate"
 		err := executeValidParser(parser, command)
 		if err != nil {
 			t.Errorf("Error with valid \"%v\" command: %v", command, err)
@@ -116,21 +116,21 @@ func TestParseCommand(t *testing.T) {
 			t.Error("Empty command returns a value, while \"nil\" is expected")
 		}
 
-		_, bgrectErr := parseCommand("bgrect 1 1 2")
+		_, bgrectErr := parseCommand("bgrect 0.1 0.2 0.3")
 		if bgrectErr == nil {
 			t.Error("Command \"bgrect\" doesn't throw an error with wrong number of args")
 		} else if bgrectErr.Error() != incorrectParamsNum.Error() {
 			t.Error("Command \"bgrect\" throws an unexpected error:", incorrectParamsNum)
 		}
 
-		_, figureErr := parseCommand("figure 1")
+		_, figureErr := parseCommand("figure 0.1")
 		if figureErr == nil {
 			t.Error("Command \"figure\" doesn't throw an error with wrong number of args")
 		} else if figureErr.Error() != incorrectParamsNum.Error() {
 			t.Error("Command \"figure\" throws an unexpected error:", incorrectParamsNum)
 		}
 
-		_, moveErr := parseCommand("move 1")
+		_, moveErr := parseCommand("move 0.2")
 		if moveErr == nil {
 			t.Error("Command \"move\" doesn't throw an error with wrong number of args")
 		} else if moveErr.Error() != incorrectParamsNum.Error() {
