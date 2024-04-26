@@ -102,8 +102,8 @@ func TestParse(t *testing.T) {
 	{
 		command = ""
 		err := executeValidParser(parser, command)
-		if err != nil {
-			t.Errorf("Error with empty command: %v", err)
+		if err == nil {
+			t.Errorf("Error wasn't thrown with invalid empty command")
 		}
 	}
 }

@@ -56,6 +56,10 @@ func (p *Parser) Parse(in io.Reader) ([]painter.Operation, error) {
 			res = append(res, op)
 		}
 	}
+	if len(res) == 0 {
+		return nil, fmt.Errorf("empty operation")
+	}
+
 	return res, nil
 }
 
